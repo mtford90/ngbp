@@ -1,8 +1,8 @@
 {
-  "author": "Josh David Miller",
-  "name": "ngbp",
-  "version": "0.3.2",
-  "homepage": "https://github.com/ngbp/ngbp",
+  "author": "Michael Ford",
+  "name": "myc-web-app",
+  "version": "0.1.0",
+  "homepage": "http://www.mosayc.com",
   "licenses": {
     "type": "MIT",
     "url": "https://raw.github.com/ngbp/ngbp/master/LICENSE"
@@ -32,6 +32,13 @@
     "karma-jasmine": "^0.1.5",
     "grunt-karma": "^0.8.2",
     "karma-coffee-preprocessor": "^0.2.1",
-    "karma": "^0.12.9"
+    "karma": "^0.12.9",
+    "mocha": "~1.20.1",
+    "karma-mocha": "~0.1.3",
+    "karma-chai": "~0.1.0",
+    "chai": "~1.9.1",
+    "phantomjs": "~1.9.7-8",
+    "karma-phantomjs-launcher": "~0.1.4",
+    "karma-chrome-launcher": "~0.1.4"
   }
 }

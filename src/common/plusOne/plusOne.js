@@ -9,7 +9,4 @@ angular.module( 'plusOne', [] )
       });
     }
   };
-})
-
-;
-
+});

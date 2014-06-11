@@ -38,7 +38,8 @@ module.exports = {
    */
   test_files: {
     js: [
-      'vendor/angular-mocks/angular-mocks.js'
+      'vendor/angular-mocks/angular-mocks.js',
+      'src/test-lib.js'
     ]
   },
 
@@ -72,5 +73,5 @@ module.exports = {
     ],
     assets: [
     ]
-  },
+  }
 };
