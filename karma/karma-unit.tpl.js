@@ -11,8 +11,7 @@ module.exports = function ( karma ) {
     files: [
       <% scripts.forEach( function ( file ) { %>'<%= file %>',
       <% }); %>
-      'src/**/*.js',
-      'src/**/*.coffee'
+      'src/**/*.js'
     ],
     exclude: [
       'src/assets/**/*.js'
@@ -20,6 +19,7 @@ module.exports = function ( karma ) {
     ],
     frameworks: [ 'mocha', 'chai' ],
     plugins: [ 'karma-mocha',
+               'karma-phantomjs-launcher',
                'karma-chrome-launcher',
                'karma-chai'
                ],
@@ -56,7 +56,7 @@ module.exports = function ( karma ) {
      * the aesthetic advantage of not launching a browser every time you save.
      */
     browsers: [
-      'Chrome'
+      'PhantomJS'
     ],
 
     proxies: {
