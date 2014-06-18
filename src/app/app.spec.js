@@ -13,5 +13,9 @@ describe('AppCtrl', function () {
         it('should pass a dummy test', inject(function () {
             assert.ok(AppCtrl);
         }));
+
+        it('should fail a dummy test', inject(function () {
+            assert.ok(false);
+        }));
     });
 });
