@@ -17,11 +17,9 @@ module.exports = function ( karma ) {
       'src/assets/**/*.js'
 
     ],
-    frameworks: [ 'mocha', 'chai' ],
-    plugins: [ 'karma-mocha',
+    frameworks: [ 'jasmine' ],
+    plugins: [ 'karma-jasmine',
                'karma-phantomjs-launcher',
-               'karma-chrome-launcher',
-               'karma-chai'
                ],
 
     /**

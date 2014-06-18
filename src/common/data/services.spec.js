@@ -46,6 +46,6 @@ describe('httpBasedService', function () {
         // check the result.
         // (after Angular 1.2.5: be sure to use `toEqual` and not `toBe`
         // as the object will be a copy and not the same instance.)
-        assert.ok(result);
+        expect(result).toBeTruthy();
     });
 });

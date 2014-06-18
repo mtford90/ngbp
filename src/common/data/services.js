@@ -22,16 +22,6 @@ mod.provider('httpBasedService',  function () {
                     .then(function (result) {
                         return result.data;
                     });
-            },
-            getTrending: function (success, error) {
-                $http({method: 'GET', url: self.path}).
-                    success(function (data) {
-                        success(data);
-                    }).
-                    error(function (data, status) {
-                        console.log(status);
-                        error(data);
-                    });
             }
         };
     };

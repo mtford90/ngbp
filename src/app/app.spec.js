@@ -1,3 +1,5 @@
+
+
 describe('AppCtrl', function () {
     describe('isCurrentUrl', function () {
         var AppCtrl, $location, $scope;
@@ -11,11 +13,11 @@ describe('AppCtrl', function () {
         }));
 
         it('should pass a dummy test', inject(function () {
-            assert.ok(AppCtrl);
+            expect(AppCtrl).toBeTruthy();
         }));
 
-        it('should fail a dummy test', inject(function () {
-            assert.ok(false);
-        }));
+
+
+
     });
 });

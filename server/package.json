@@ -1,0 +1,14 @@
+{
+  "name": "server",
+  "version": "0.0.0",
+  "description": "",
+  "main": "blah.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ytdl": "~0.2.8"
+  }
+}

@@ -74,10 +74,11 @@ module.exports = function (grunt) {
         /**
          * The directories to delete when `grunt clean` is executed.
          */
-        clean: [
-            '<%= build_dir %>',
-            '<%= compile_dir %>'
-        ],
+        clean: {
+            css: '<%= build_dir %>/**/*.css',
+            build: '<%= build_dir %>',
+            compile: '<%= compile_dir %>'
+        },
 
         /**
          * The `copy` task just copies files from A to B. We use it here to copy
@@ -138,6 +139,14 @@ module.exports = function (grunt) {
             }
         },
 
+//        cssmin: {
+//            combine: {
+//                files: {
+//                    '<%= build_dir %>/assets/<%= pkg.name %>-<%= pkg.version %>.css' : '<%= build_dir %>/assets/*.css'
+//                }
+//            }
+//        },
+
         /**
          * `grunt concat` concatenates multiple source files into a single file.
          */
@@ -149,7 +158,7 @@ module.exports = function (grunt) {
             build_css: {
                 src: [
                     '<%= vendor_files.css %>',
-                    '<%= build_dir %>/assets/<%= pkg.name %>-<%= pkg.version %>.css'
+                    '<%= build_dir %>/assets/*.css'
                 ],
                 dest: '<%= build_dir %>/assets/<%= pkg.name %>-<%= pkg.version %>.css'
             },
@@ -286,7 +295,6 @@ module.exports = function (grunt) {
          * and JS files co-exist here but they get split apart later.
          */
         index: {
-
             /**
              * During development, we don't want to have wait for compilation,
              * concatenation, minification, etc. So to avoid these steps, we simply
@@ -317,6 +325,27 @@ module.exports = function (grunt) {
                     '<%= vendor_files.css %>',
                     '<%= build_dir %>/assets/<%= pkg.name %>-<%= pkg.version %>.css'
                 ]
+            }
+        },
+
+        compass: {
+            build: {
+                options: {
+                    sassDir: 'src/sass',
+                    cssDir: '<%= build_dir %>/assets/',
+                    importPath: 'vendor/bootstrap-sass-official/vendor/assets/stylesheets'
+                }
+            }
+        },
+
+        sass: {
+            buildvendorsass: {
+                files: [{
+                    expand: true,
+                    src: '<%= vendor_files.sass %>',
+                    dest: '<%= build_dir %>/assets/',
+                    ext: '.css'
+                }]
             }
         },
 
@@ -412,6 +441,14 @@ module.exports = function (grunt) {
             },
 
             /**
+             * When changes detected in sass files, we use compass to build, minify and build
+             */
+            sass: {
+                files: ['src/**/*.sass'],
+                tasks: ['clean:css', 'compass:build',  'concat:build_css', 'copy:build_app_assets']
+            },
+
+            /**
              * When a JavaScript unit test file changes, we only want to lint it and
              * run the unit tests. We don't want to do any live reloading.
              */
@@ -449,8 +486,8 @@ module.exports = function (grunt) {
      * The `build` task gets your app ready to run for development and testing.
      */
     grunt.registerTask('build', [
-        'clean', 'html2js', 'jshint',
-        'concat:build_css', 'copy:build_app_assets', 'copy:build_vendor_assets',
+        'clean', 'html2js', 'jshint', 'compass:build', 'concat:build_css',
+         'copy:build_app_assets', 'copy:build_vendor_assets',
         'copy:build_appjs', 'copy:build_vendorjs', 'index:build', 'karmaconfig',
         'karma:continuous'
     ]);
@@ -462,6 +499,18 @@ module.exports = function (grunt) {
     grunt.registerTask('compile', [
         'copy:compile_assets', 'ngmin', 'concat:compile_js', 'uglify', 'index:compile'
     ]);
+
+//    grunt.registerTask('compass:rename', function () {
+//        var glob = require('glob');
+//        var fs = require('fs');
+//        var json = grunt.file.readJSON("package.json");
+//        console.log(json);
+//        var fileNames = glob.sync(userConfig.build_dir + '/assets/*.css');
+//        for (var idx=0;idx<fileNames.length;idx++) {
+//            var fileName = fileNames[idx];
+//            console.log(fileName);
+//        }
+//    });
 
     /**
      * A utility function to get all app JavaScript sources.
