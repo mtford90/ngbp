@@ -14138,6 +14138,13 @@ exports.get = function (link, info, callback) {
                 var newFormats = util.parseFormats(config.args);
                 var html5playerfile = 'http:' + config.assets.js;
 
+                if(html5playerfile.indexOf('http://s.ytimg.com')<0) {
+                    throw 'ouch!!!'
+                }
+
+                html5playerfile = html5playerfile.replace('http://s.ytimg.com', '/ytimg');
+
+                console.log(html5playerfile);
 
                 var req = $.ajax({
                     url: html5playerfile,
