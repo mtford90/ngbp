@@ -39,7 +39,17 @@ ytdl = module.exports = function ytdl(link, options, callback) {
         delete requestOptions.quality;
         delete requestOptions.range;
         delete requestOptions.filter;
-        callback(null, requestOptions.url);
+        var url = requestOptions.url;
+        var noScheme = url.split('http://')[1];
+        var comps = noScheme.split('.');
+        var subdomain = comps[0];
+        comps.shift();
+        var split = noScheme.split('/');
+        console.log(split);
+        split.shift();
+        console.log(split);
+        url = 'http://localhost/googlevideo/' + subdomain + '/' + split.join('/');
+        callback(null, url, info, format);
     });
 };
 
