@@ -1,8 +1,8 @@
 var qs       = require('querystring');
-var _        = require('underscore');
+//var _        = require('underscore');
 var util     = require('./util');
 var sig      = require('./sig');
-var $      = require('jquery');
+//var $      = require('jquery');
 
 
 var INFO_URL = '/youtube/get_video_info?' +

@@ -1,6 +1,6 @@
 var qs      = require('querystring');
 var url     = require('url');
-var _       = require('underscore');
+//var _       = require('underscore');
 var FORMATS = require('./formats');
 
 

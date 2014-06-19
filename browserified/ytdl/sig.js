@@ -1,6 +1,6 @@
 var url = require('url');
 var util = require('./util');
-var $ = require('jquery');
+//var $ = require('jquery');
 var JStream = require('jstream');
 
 /**

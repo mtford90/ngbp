@@ -1,8 +1,8 @@
 /**
  * Globals
  */
-$ = require('jquery');
-_ = require('underscore');
+//$ = require('jquery');
+//_ = require('underscore');
 
 /**
  * Internals
