@@ -1,0 +1,93 @@
+<div class="row">
+    <a class="btn btn-large btn-success pull-right">
+        Publish
+    </a>
+    <input id="INPUT_1" placeholder="URL*" type="search" ng-model="url" ng-blur="change(url)"/>
+
+    <p id="P_1">
+        * At the moment only YouTube URLs will work
+    </p>
+    <span class="glyphicon glyphicon-record"></span>
+    <span class="glyphicon glyphicon-stop"></span>
+    <span class="glyphicon glyphicon-camera"></span>
+    <button ng-click="imageCapture()">Image Capture</button>
+    <button ng-click="startSnap()">Start Snap</button>
+    <button ng-click="endSnap()">End Snap</button>
+    <video id="video" ng-src='{{ playback_url }}' preload="metadata" width="320" height="240" controls>
+    </video>
+    <video id="hidden-video" ng-src='{{ playback_url2 }}' preload="metadata" width="320" height="240" controls>
+    </video>
+
+    <!--<br/>-->
+    <!--<canvas id="canvas" width="500" height="16"></canvas>-->
+    <!--<br>-->
+    <!--<button id="play">Play</button>-->
+    <!--<button id="pause">Pause</button>-->
+
+    <div>
+        <div ng-switch ng-repeat="snapshot in snapshots">
+            <div ng-if="snapshot.playback">
+                <div snapshot data="snapshot"></div>
+            </div>
+        </div>
+    <!--</div>-->
+    <!--<script>-->
+        <!--$(document).ready(function () {-->
+            <!--var ctx = canvas.getContext('2d');-->
+
+            <!--canvas.onclick = function (e) {-->
+                <!--var vl = video.duration,-->
+                        <!--w = canvas.width,-->
+                        <!--x = e.clientX - 5;-->
+
+                <!--video.currentTime = x / w * vl;-->
+            <!--};-->
+            <!--loop();-->
+
+            <!--function loop() {-->
+
+                <!--var b = video.buffered,-->
+                        <!--i = b.length,-->
+                        <!--w = canvas.width,-->
+                        <!--h = canvas.height,-->
+                        <!--vl = video.duration,-->
+                        <!--x1, x2;-->
+
+                <!--ctx.fillStyle = '#000';-->
+                <!--ctx.fillRect(0, 0, w, h);-->
+                <!--ctx.fillStyle = '#d00';-->
+
+                <!--while (i--) {-->
+                    <!--x1 = b.start(i) / vl * w;-->
+                    <!--x2 = b.end(i) / vl * w;-->
+                    <!--ctx.fillRect(x1, 0, x2 - x1, h);-->
+                <!--}-->
+                <!--ctx.fillStyle = '#fff';-->
+
+                <!--x1 = video.currentTime / vl * w;-->
+                <!--ctx.textBaseline = 'top';-->
+                <!--ctx.textAlign = 'left';-->
+
+                <!--ctx.fillText(video.currentTime.toFixed(1), 4, 4);-->
+
+                <!--ctx.textAlign = 'right';-->
+                <!--ctx.fillText(vl.toFixed(1), w - 4, 4);-->
+
+                <!--ctx.beginPath();-->
+                <!--ctx.arc(x1, h * 0.5, 7, 0, 2 * Math.PI);-->
+                <!--ctx.fill();-->
+
+                <!--setTimeout(loop, 29);-->
+            <!--}-->
+
+            <!--play.addEventListener('click', function () {-->
+                <!--video.play()-->
+            <!--}, false);-->
+            <!--pause.addEventListener('click', function () {-->
+                <!--video.pause()-->
+            <!--}, false);-->
+        <!--});-->
+
+    <!--</script>-->
+</div>
+

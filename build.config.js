@@ -70,10 +70,16 @@ module.exports = {
             'vendor/angular-bootstrap/ui-bootstrap-tpls.min.js',
             'vendor/angular-ui-router/release/angular-ui-router.js',
             'vendor/angular-ui-utils/modules/route/route.js',
+            'vendor/pen/src/pen.js',
+            'vendor/pen/src/markdown.js',
             'browserified/ytdl/bundle.js'
         ],
         css: [
-            'vendor/bootstrap/dist/css/*.css'
+            'vendor/bootstrap/dist/css/*.css',
+            'vendor/bootstrap/dist/fonts/*',
+            'vendor/pen/src/pen.css',
+            'vendor/pen/src/font/*'
+
         ],
         sass: [
         ],

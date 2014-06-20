@@ -39,8 +39,8 @@ ytdl = module.exports = function ytdl(link, options, callback) {
         delete requestOptions.quality;
         delete requestOptions.range;
         delete requestOptions.filter;
-        var url = requestOptions.url;
-        var noScheme = url.split('http://')[1];
+        var proxied_url = requestOptions.url;
+        var noScheme = proxied_url.split('http://')[1];
         var comps = noScheme.split('.');
         var subdomain = comps[0];
         comps.shift();
@@ -48,8 +48,8 @@ ytdl = module.exports = function ytdl(link, options, callback) {
         console.log(split);
         split.shift();
         console.log(split);
-        url = 'http://localhost/googlevideo/' + subdomain + '/' + split.join('/');
-        callback(null, url, info, format);
+        proxied_url = 'http://localhost/googlevideo/' + subdomain + '/' + split.join('/');
+        callback(null, requestOptions.url, proxied_url, info, format);
     });
 };
 
