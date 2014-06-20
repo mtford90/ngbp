@@ -23,6 +23,8 @@ angular.module('ngBoilerplate.edit', [
         $scope.startSnapTime = null;
         $scope.endSnapTime = null;
 
+        $scope.url = 'https://www.youtube.com/watch?v=kNAxYBEfC_Y';
+
         function videoWithFormat(url, container, variable) {
             youtube.getPlaybackURL(url, {
                 filter: function (format) {
@@ -57,6 +59,16 @@ angular.module('ngBoilerplate.edit', [
             });
         }
 
+        $scope.keyPress = function(e) {
+            var keyCode = e.keyCode;
+            if (keyCode == 13) {
+                setTimeout(function () {
+                    $(e.target).blur();
+                    $scope.change($scope.url);
+                });
+            }
+        };
+
         $scope.change = function (url) {
             console.log('Changing to ' + url);
             /**
@@ -64,6 +76,7 @@ angular.module('ngBoilerplate.edit', [
              */
             videoWithFormat(url, 'webm', 'playback_url');
             videoWithFormat(url, 'mp4', 'playback_url2');
+            $scope.snapshots = [];
         };
 
         $scope.imageCapture = function () {
@@ -77,32 +90,36 @@ angular.module('ngBoilerplate.edit', [
             });
         };
 
-        $scope.startSnap = function () {
+        $scope.snap = function () {
             var video = $('#video').get(0);
-            $scope.startSnapTime = video.currentTime;
-            console.log('Started snap', $scope.startSnapTime);
-        };
+            if ($scope.startSnapTime) {
+                $scope.endSnapTime = video.currentTime;
+                console.log('ended snap', $scope.endSnapTime);
+                var start = $scope.startSnapTime;
+                var end = $scope.endSnapTime;
+                $scope.snapshots.push({
+                    time: video.currentTime,
+                    url: $scope.playback_url,
+                    playback: true,
+                    start: start,
+                    end: end
+                });
+                $scope.startSnapTime = null;
+                $scope.endSnapTime = null;
 
 
-        $scope.endSnap = function () {
-            var video = $('#video').get(0);
-            $scope.endSnapTime = video.currentTime;
-            console.log('ended snap', $scope.endSnapTime);
-            var start = $scope.startSnapTime;
-            var end = $scope.endSnapTime;
-            if (start && end) {
-                if (end > start) {
-                    $scope.snapshots.push({
-                        time: video.currentTime,
-                        url: $scope.playback_url,
-                        playback: true,
-                        start: start,
-                        end: end
-                    });
-
-                }
             }
+            else {
+
+                $scope.startSnapTime = video.currentTime;
+                console.log('Started snap', $scope.startSnapTime);
+            }
+
         };
+
+        if ($scope.url) {
+            $scope.change($scope.url);
+        }
 
     })
 
@@ -181,9 +198,14 @@ angular.module('ngBoilerplate.edit', [
                 clear();
                 $(v).off('timeupdate', limitFunction);
             };
-            if (!(v.paused || v.ended)) {
+            /**
+             * Ensure that the canvas is initialised with first frame
+             */
+            var init = function () {
                 scope.play();
-            }
+                clearInterval(draw(v, ctx, width, height));
+            };
+            init();
         }
 
         return {
