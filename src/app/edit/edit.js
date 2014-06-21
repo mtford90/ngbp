@@ -33,8 +33,7 @@ var ngBoilerplate = angular.module('ngBoilerplate.edit', [
                     }
                 }, function (err, playback_url, proxied_playback_url, info, format) {
                     if (!err) {
-                        $log.debug('Received playback:', playback_url, info, format);
-
+                        $log.debug('Received playback: ', playback_url);
                         var req = $.ajax({
                             url: proxied_playback_url,
                             type: 'HEAD'
@@ -116,13 +115,13 @@ var ngBoilerplate = angular.module('ngBoilerplate.edit', [
             // Inject test data if dev mode enabled.
             if (DEV) {
                 var $hidden = $('#hidden-video');
-                var f = function () {
+                var token = function () {
                     $scope.$apply(function () {
                         $scope.snapshots = testData;
                     });
-                    $hidden.off('loadeddata', f);
+                    $hidden.off('canplay', token);
                 };
-                $hidden.on('loadeddata', f);
+                $hidden.on('canplay', token);
                 $scope.url = 'https://www.youtube.com/watch?v=djZBeE9yfec';
                 $scope.change($scope.url);
             }
@@ -140,44 +139,98 @@ var ngBoilerplate = angular.module('ngBoilerplate.edit', [
         })
 
         /**
-         * A service that maintains a video DOM element that can be used by the
-         * canvases and provides an interface to consuming data from that element.
+         * This service controls access to the hidden-video element and presents a robust
+         * interface to stopping, starting and taking data from it.
+         *
+         * For example, can't have multiple canvases accessing it at the same time.
          */
-        .factory('hidden-video', function () {
+        .factory('hiddenVideo', function ($log) {
+            var elem = $('#hidden-video').get(0); // The actual hidden video element.
             var queue = [];
             var executing = null; // The function that is currently executing
+            var push = function(op) {
+                queue.push(op);
+                logNumOperations();
+            };
+            var pop = function () {
+                queue.shift();
+                logNumOperations();
+            };
+            var logNumOperations = function () {
+                $log.debug('There are now ' + queue.length + ' operations in the queue');
+            };
             var executeFunction = function () {
                 if (queue.length) {
                     executing = queue[0];
                     var done = function () {
                         executing = null;
-                        queue.shift();
+                        pop();
                         executeFunction();
                     };
+                    $log.info('executing function with name: ', executing.name);
                     executing(done);
                 }
+                else {
+                    $log.debug('executeFunction called, but no operation to execute');
+                }
             };
-            var addFunction = function (f) {
-                queue.push(f);
-                if (!queue.length) {
+            var addOperation = function (op) {
+                var queueWasEmpty = !queue.length;
+                push(op);
+                // If the queue is empty, then execution has halted and we need to kick it off again.
+                if (queueWasEmpty) {
+                    $log.debug('Queue was empty, restarting execution');
                     executeFunction();
                 }
             };
             return {
+                /**
+                 * Change to time, and callback once can play i.e. have buffered first frame.
+                 * @param time
+                 * @param callback
+                 */
+                moveTo: function (time, callback) {
+                    $log.debug('Moving hidden to ' + time + 's');
+                    var operation = function (done) {
+                        elem.pause();
+                        // The event handler themselves are tokens for removing
+                        // the event handler afterwards
+                        var canPlayOrPlayToken = function () {
+                            // This is essentially a hack to ensure that the frame we actually want
+                            // is present in the hidden video before we draw it in the canvas.
+                            callback();
+                            done();
+                            $(elem).off('canplay', canPlayOrPlayToken);
+                            $(elem).off('play', canPlayOrPlayToken);
+                        };
+                        elem.currentTime = time;
+                        var frameAlreadyLoaded = elem.readyState == 4;
+                        if (frameAlreadyLoaded) {
+                            $log.debug('Frame is already loaded, so play first to ensure image is available');
+                            $(elem).on('play', canPlayOrPlayToken);
+                            elem.play();
+                            canPlayOrPlayToken();
+                        }
+                        else {
+                            $log.debug('Frame has not been loaded, so will wait for canplay event');
+                            $(elem).on('canplay', canPlayOrPlayToken);
 
-            }
+                        }
+                    };
+                    operation.name = 'moveTo';
+                    addOperation(operation);
+                },
+                addOperation: addOperation
+            };
         })
 
-        .directive('snapshot', function () {
+        .directive('snapshot', function (hiddenVideo) {
             var drawToken = null;
 
             function draw(v, c, w, h) {
-                console.log('drawing');
-                if (v.paused || v.ended) {
-                    return false;
-                }
                 c.drawImage(v, 0, 0, w, h);
                 drawToken = setTimeout(draw, 20, v, c, w, h);
+                return drawToken;
             }
 
             function clear() {
@@ -189,7 +242,6 @@ var ngBoilerplate = angular.module('ngBoilerplate.edit', [
 
             function link(scope, element) {
                 var $hidden = $('#hidden-video');
-                console.log('linking ', scope.data);
                 var v = $hidden.get(0);
                 var canvas = $(element).find('canvas').get(0);
                 var width = v.videoWidth;
@@ -211,18 +263,23 @@ var ngBoilerplate = angular.module('ngBoilerplate.edit', [
                     var start = scope.data.start;
                     var end = scope.data.end;
                     var currentTime = v.currentTime;
-                    if (currentTime <= start) {
-                        v.currentTime = start;
+
+                    function play() {
+                        v.play();
+                        draw(v, ctx, width, height);
+                        $(v).on('timeupdate', limitFunction);
                     }
-                    else if (currentTime >= end) {
-                        v.currentTime = start;
+
+                    if (currentTime <= start || currentTime >= end) {
+                        hiddenVideo.moveTo(start, function () {
+                            play();
+                        });
                     }
-                    v.play();
-                    draw(v, ctx, width, height);
-                    $(v).on('timeupdate', limitFunction);
+                    else {
+                        play();
+                    }
                 };
                 scope.stop = function () {
-                    v.pause();
                     clear();
                     $(v).off('timeupdate', limitFunction);
                 };
@@ -230,8 +287,9 @@ var ngBoilerplate = angular.module('ngBoilerplate.edit', [
                  * Ensure that the canvas is initialised with first frame
                  */
                 var initVideo = function () {
-
-                    clearInterval(draw(v, ctx, width, height));
+                    hiddenVideo.moveTo(scope.data.start, function () {
+                        clearTimeout(draw(v, ctx, width, height));
+                    });
                 };
                 initVideo();
                 var editor = $(element).find('.editor');
