@@ -1,106 +1,35 @@
 <div class="row">
+    <video id="hidden-video" ng-src='{{ playback_url2 }}' preload="metadata" controls>
+    </video>
     <a class="btn btn-large btn-success pull-right">
         Publish
     </a>
-    <input id="INPUT_1"  placeholder="URL*" type="search" ng-model="url" ng-keypress="keyPress($event)"/>
+    <input id="INPUT_1" placeholder="URL*" type="search" ng-model="url" ng-keypress="keyPress($event)"/>
 
     <p id="P_1">
         * At the moment only YouTube URLs will work
     </p>
 
 
+    <div id="player" ng-if="playback_url" class="text-center">
 
-
-<div id="player" ng-if="playback_url" class="text-center">
-
-    <div class="btn-group">
-        <button class="action-button btn" ng-click="imageCapture()" tooltip="Take a screenshot"><span class="glyphicon glyphicon-camera"></span></button>
-        <button class="action-button btn" ng-click="snap()" tooltip="Record a snapshot">
-            <span class="glyphicon glyphicon-record" ng-if="!startSnapTime"></span>
-            <span class="glyphicon glyphicon-stop" ng-if="startSnapTime"></span>
-        </button>
-    </div>
-    <div>
-        <video id="video" ng-src='{{ playback_url }}' preload="metadata"  controls>
-        </video>
-        <video id="hidden-video" ng-src='{{ playback_url2 }}' preload="metadata"  controls>
-        </video>
-    </div>
-
-
-</div>
-
-
-    <!--<br/>-->
-    <!--<canvas id="canvas" width="500" height="16"></canvas>-->
-    <!--<br>-->
-    <!--<button id="play">Play</button>-->
-    <!--<button id="pause">Pause</button>-->
-
-    <div>
-        <div ng-switch ng-repeat="snapshot in snapshots">
-            <div ng-if="snapshot.playback">
-                <div snapshot data="snapshot"></div>
-            </div>
+        <div class="btn-group">
+            <button class="action-button btn" ng-click="imageCapture()" tooltip="Take a screenshot"><span
+                    class="glyphicon glyphicon-camera"></span></button>
+            <button class="action-button btn" ng-click="snap()" tooltip="Record a snapshot">
+                <span class="glyphicon glyphicon-record" ng-if="!startSnapTime"></span>
+                <span class="glyphicon glyphicon-stop" ng-if="startSnapTime"></span>
+            </button>
         </div>
-    <!--</div>-->
-    <!--<script>-->
-        <!--$(document).ready(function () {-->
-            <!--var ctx = canvas.getContext('2d');-->
+        <div>
+            <video id="video" ng-src='{{ playback_url }}' preload="metadata" controls>
+            </video>
 
-            <!--canvas.onclick = function (e) {-->
-                <!--var vl = video.duration,-->
-                        <!--w = canvas.width,-->
-                        <!--x = e.clientX - 5;-->
-
-                <!--video.currentTime = x / w * vl;-->
-            <!--};-->
-            <!--loop();-->
-
-            <!--function loop() {-->
-
-                <!--var b = video.buffered,-->
-                        <!--i = b.length,-->
-                        <!--w = canvas.width,-->
-                        <!--h = canvas.height,-->
-                        <!--vl = video.duration,-->
-                        <!--x1, x2;-->
-
-                <!--ctx.fillStyle = '#000';-->
-                <!--ctx.fillRect(0, 0, w, h);-->
-                <!--ctx.fillStyle = '#d00';-->
-
-                <!--while (i--) {-->
-                    <!--x1 = b.start(i) / vl * w;-->
-                    <!--x2 = b.end(i) / vl * w;-->
-                    <!--ctx.fillRect(x1, 0, x2 - x1, h);-->
-                <!--}-->
-                <!--ctx.fillStyle = '#fff';-->
-
-                <!--x1 = video.currentTime / vl * w;-->
-                <!--ctx.textBaseline = 'top';-->
-                <!--ctx.textAlign = 'left';-->
-
-                <!--ctx.fillText(video.currentTime.toFixed(1), 4, 4);-->
-
-                <!--ctx.textAlign = 'right';-->
-                <!--ctx.fillText(vl.toFixed(1), w - 4, 4);-->
-
-                <!--ctx.beginPath();-->
-                <!--ctx.arc(x1, h * 0.5, 7, 0, 2 * Math.PI);-->
-                <!--ctx.fill();-->
-
-                <!--setTimeout(loop, 29);-->
-            <!--}-->
-
-            <!--play.addEventListener('click', function () {-->
-                <!--video.play()-->
-            <!--}, false);-->
-            <!--pause.addEventListener('click', function () {-->
-                <!--video.pause()-->
-            <!--}, false);-->
-        <!--});-->
-
-    <!--</script>-->
-</div>
+        </div>
+    </div>
+    <div ng-switch ng-repeat="snapshot in snapshots" class="container">
+        <div ng-if="snapshot.playback">
+            <div snapshot data="snapshot" class="row"></div>
+        </div>
+    </div>
 
