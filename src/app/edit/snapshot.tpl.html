@@ -1,9 +1,9 @@
 
 <div class="canvas-wrapper col-md-6">
+    <canvas class="snapshot-canvas"></canvas>
     <div class="buttons">
         <button ng-click="play()">Play</button>
         <button ng-click="stop()">Stop</button>
     </div>
-    <canvas class="snapshot-canvas"></canvas>
 </div>
-<div class="editor col-md-6" ng-bind-html="data.content"></div>
+<span class="editor " ng-bind-html="data.content"></span>

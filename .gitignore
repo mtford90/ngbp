@@ -6,4 +6,3 @@ node_modules/
 vendor/
 .idea
 .sass-cache
-bundle.js

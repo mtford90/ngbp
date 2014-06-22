@@ -110,10 +110,9 @@ module.exports = function (grunt) {
                 files: [
                     {
                         src: [ '<%= vendor_files.assets %>' ],
-                        dest: '<%= build_dir %>/assets/',
+                        dest: '<%= build_dir %>/',
                         cwd: '.',
-                        expand: true,
-                        flatten: true
+                        expand: true
                     }
                 ]
             },
@@ -137,6 +136,17 @@ module.exports = function (grunt) {
                     }
                 ]
             },
+            precompile_vendor_assets: {
+                files: [
+                    {
+                        src: [ '<%= vendor_files.assets %>' ],
+                        dest: '<%= build_dir %>/assets/',
+                        cwd: '.',
+                        expand: true,
+                        flatten: true
+                    }
+                ]
+            },
             compile_assets: {
                 files: [
                     {
@@ -149,13 +159,34 @@ module.exports = function (grunt) {
             }
         },
 
-//        cssmin: {
-//            combine: {
-//                files: {
-//                    '<%= build_dir %>/assets/<%= pkg.name %>-<%= pkg.version %>.css' : '<%= build_dir %>/assets/*.css'
-//                }
-//            }
-//        },
+        cssmin: {
+            combine: {
+                files: {
+                    '<%= build_dir %>/assets/<%= pkg.name %>-<%= pkg.version %>.min.css': [
+                        '<%= build_dir %>/css/*.css',
+                        '<%= build_dir %>/vendor/**/*.css'
+                    ]
+                }
+            }
+        },
+
+        browserify: {
+            ytdl: {
+                src: 'browserified/ytdl/*.js',
+                dest: '<%= build_dir %>/browserified/ytdl/bundle.js',
+                options: {
+                    postBundleCB: function (err, src, next) {
+                        if (err) {
+                            next(err);
+                        }
+                        else {
+                            next(null, ';' + src + ';');
+                        }
+                    }
+                }
+
+            }
+        },
 
         /**
          * `grunt concat` concatenates multiple source files into a single file.
@@ -168,9 +199,9 @@ module.exports = function (grunt) {
             build_css: {
                 src: [
                     '<%= vendor_files.css %>',
-                    '<%= build_dir %>/assets/*.css'
+                    '<%= build_dir %>/css/*.css'
                 ],
-                dest: '<%= build_dir %>/assets/<%= pkg.name %>-<%= pkg.version %>.css'
+                dest: '<%= build_dir %>/css/<%= pkg.name %>-<%= pkg.version %>.css'
             },
             /**
              * The `compile_js` target is the concatenation of our application source
@@ -188,7 +219,7 @@ module.exports = function (grunt) {
                     '<%= html2js.common.dest %>',
                     'module.suffix'
                 ],
-                dest: '<%= compile_dir %>/assets/<%= pkg.name %>-<%= pkg.version %>.js'
+                dest: '<%= compile_dir %>/assets/<%= pkg.name %>-<%= pkg.version %>.min.js'
             }
         },
 
@@ -319,7 +350,7 @@ module.exports = function (grunt) {
                     '<%= html2js.common.dest %>',
                     '<%= html2js.app.dest %>',
                     '<%= vendor_files.css %>',
-                    '<%= build_dir %>/assets/*.css'
+                    '<%= build_dir %>/css/*.css'
                 ]
             },
 
@@ -332,8 +363,7 @@ module.exports = function (grunt) {
                 dir: '<%= compile_dir %>',
                 src: [
                     '<%= concat.compile_js.dest %>',
-                    '<%= vendor_files.css %>',
-                    '<%= build_dir %>/assets/<%= pkg.name %>-<%= pkg.version %>.css'
+                    '<%= build_dir %>/assets/<%= pkg.name %>-<%= pkg.version %>.min.css'
                 ]
             }
         },
@@ -342,8 +372,7 @@ module.exports = function (grunt) {
             build: {
                 options: {
                     sassDir: 'src/sass',
-                    cssDir: '<%= build_dir %>/assets/'
-//                    importPath: 'vendor/bootstrap-sass-official/vendor/assets/stylesheets'
+                    cssDir: '<%= build_dir %>/css/'
                 }
             }
         },
@@ -354,7 +383,7 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         src: '<%= vendor_files.sass %>',
-                        dest: '<%= build_dir %>/assets/',
+                        dest: '<%= build_dir %>/css/',
                         ext: '.css'
                     }
                 ]
@@ -373,6 +402,33 @@ module.exports = function (grunt) {
                     '<%= html2js.app.dest %>',
                     '<%= html2js.common.dest %>',
                     '<%= test_files.js %>'
+                ]
+            }
+        },
+
+        /**
+         * Since vendor assets are flattened on compilation, we need to remove the
+         * relative directories from vendor css etc.
+         */
+        replace: {
+            bootstrap: {
+                src: '<%= build_dir %>/vendor/bootstrap/dist/css/*.css',
+                dest: '<%= build_dir %>/vendor/bootstrap/dist/css/',
+                replacements: [
+                    {
+                        from: '../fonts/',
+                        to: ''
+                    }
+                ]
+            },
+            pen: {
+                src: '<%= build_dir %>/vendor/pen/src/pen.css',
+                dest: '<%= build_dir %>/vendor/pen/src/pen.css',
+                replacements: [
+                    {
+                        from: 'font/',
+                        to: ''
+                    }
                 ]
             }
         },
@@ -421,6 +477,10 @@ module.exports = function (grunt) {
                 tasks: [ 'jshint:src', 'karma:unit:run', 'copy:build_appjs' ]
             },
 
+            browserify: {
+                files: 'browserified/ytdl/*.js',
+                tasks: ['browserify:ytdl']
+            },
 
             /**
              * When assets are changed, copy them. Note that this will *not* copy new
@@ -498,9 +558,18 @@ module.exports = function (grunt) {
      * The `build` task gets your app ready to run for development and testing.
      */
     grunt.registerTask('build', [
-        'clean', 'html2js', 'jshint', 'compass:build',
-        'copy:build_app_assets', 'copy:build_vendor_assets',
-        'copy:build_appjs', 'copy:build_vendorjs', 'copy:build_vendorcss', 'index:build', 'karmaconfig',
+        'clean',
+        'browserify',
+        'html2js',
+        'jshint',
+        'compass:build',
+        'copy:build_app_assets',
+        'copy:build_vendor_assets',
+        'copy:build_appjs',
+        'copy:build_vendorjs',
+        'copy:build_vendorcss',
+        'index:build',
+        'karmaconfig',
         'karma:continuous'
     ]);
 
@@ -509,20 +578,15 @@ module.exports = function (grunt) {
      * minifying your code.
      */
     grunt.registerTask('compile', [
-        'copy:compile_assets', 'ngmin', 'concat:compile_js', 'uglify', 'index:compile'
+        'copy:precompile_vendor_assets',
+        'replace',
+        'cssmin',
+        'copy:compile_assets',
+        'ngmin',
+        'concat:compile_js',
+        'uglify',
+        'index:compile'
     ]);
-
-//    grunt.registerTask('compass:rename', function () {
-//        var glob = require('glob');
-//        var fs = require('fs');
-//        var json = grunt.file.readJSON("package.json");
-//        console.log(json);
-//        var fileNames = glob.sync(userConfig.build_dir + '/assets/*.css');
-//        for (var idx=0;idx<fileNames.length;idx++) {
-//            var fileName = fileNames[idx];
-//            console.log(fileName);
-//        }
-//    });
 
     /**
      * A utility function to get all app JavaScript sources.

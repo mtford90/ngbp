@@ -48,7 +48,7 @@ ytdl = module.exports = function ytdl(link, options, callback) {
         console.log(split);
         split.shift();
         console.log(split);
-        proxied_url = 'http://localhost/googlevideo/' + subdomain + '/' + split.join('/');
+        proxied_url = '/googlevideo/' + subdomain + '/' + split.join('/');
         callback(null, requestOptions.url, proxied_url, info, format);
     });
 };
