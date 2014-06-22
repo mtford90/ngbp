@@ -213,6 +213,7 @@ module.exports = function (grunt) {
                 },
                 src: [
                     '<%= vendor_files.js %>',
+                    '<%= build_dir %>/browserified/**/*.js',
                     'module.prefix',
                     '<%= build_dir %>/src/**/*.js',
                     '<%= html2js.app.dest %>',
@@ -347,6 +348,7 @@ module.exports = function (grunt) {
                 src: [
                     '<%= vendor_files.js %>',
                     '<%= build_dir %>/src/**/*.js',
+                    '<%= build_dir %>/browserified/**/*.js',
                     '<%= html2js.common.dest %>',
                     '<%= html2js.app.dest %>',
                     '<%= vendor_files.css %>',
@@ -534,7 +536,20 @@ module.exports = function (grunt) {
                 }
             }
 
+        },
+
+        htmlmin: {
+            dist: {
+                options: {
+                    removeComments: true,
+                    collapseWhitespace: true
+                },
+                files: {
+                    '<%= compile_dir %>/index.html':  '<%= compile_dir %>/index.html'
+                }
+            }
         }
+
     };
 
     grunt.initConfig(grunt.util._.extend(taskConfig, userConfig));
@@ -585,7 +600,8 @@ module.exports = function (grunt) {
         'ngmin',
         'concat:compile_js',
         'uglify',
-        'index:compile'
+        'index:compile',
+        'htmlmin'
     ]);
 
     /**

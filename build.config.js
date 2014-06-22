@@ -65,7 +65,6 @@ module.exports = {
         js: [
             'vendor/jquery/dist/jquery.js',
             'vendor/underscore/underscore.js',
-            'browserified/ytdl/bundle.js',
             'vendor/angular/angular.js',
             'vendor/angular-bootstrap/ui-bootstrap-tpls.min.js',
             'vendor/angular-ui-router/release/angular-ui-router.js',

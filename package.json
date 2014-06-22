@@ -55,6 +55,7 @@
     "grunt-contrib-sass": "~0.7.3",
     "grunt-text-replace": "~0.3.12",
     "browserify": "~4.1.11",
-    "grunt-browserify": "~2.1.0"
+    "grunt-browserify": "~2.1.0",
+    "grunt-contrib-htmlmin": "~0.3.0"
   }
 }
